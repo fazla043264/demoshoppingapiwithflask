@@ -11,8 +11,7 @@ class UserModel(db.Model):
 
     def __init__(self, username, password): 
         self.username = username
-        self.password = generate_password_hash(
-            password)
+        self.password = generate_password_hash(password).decode('utf-8')
     
     def save_to_db(self):
 
