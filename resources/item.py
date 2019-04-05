@@ -34,7 +34,7 @@ class Item(Resource):
         data = Item.parser.parse_args()
         item = ItemModel(name, **data)
 
-        print(item)
+        # print(item)
         
         try:
             item.save_to_db()
@@ -65,9 +65,7 @@ class Item(Resource):
         else:
             item.price = data['price']
             item.store_id = store.id
-            print("store.id = ", store.id )
-            print("item.store_id = ", item.store_id)
-            print(item)
+            
         item.save_to_db()
             # try:
             #     ItemModel.update_item(update_item)
