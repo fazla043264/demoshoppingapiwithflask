@@ -1,5 +1,6 @@
 import sqlite3
 from db import db
+from models.store import StoreModel
 
 
 class ItemModel(db.Model):
@@ -19,12 +20,13 @@ class ItemModel(db.Model):
         self.store_id = store_id
 
     def json(self):
-        return {'name': self.name, 'price' : self.price}
-
+        return {'name': self.name, 'price' : self.price, 'store_id' : self.store_id}
     
     @classmethod
-    def find_by_name(cls, name):
-        return cls.query.filter_by(name = name).first() # This is returning a ItemModel object SELECT * FROM items WHERE name = name
+    def find_by_name(cls, store_name, name):
+        store = StoreModel.find_by_name(store_name)
+
+        return cls.query.filter_by(store_id = store.id, name = name).first() # This is returning a ItemModel object SELECT * FROM items WHERE name = name
     
     def save_to_db(self):
         db.session.add(self)
@@ -33,3 +35,5 @@ class ItemModel(db.Model):
     def delete_from_db(self):
         db.session.delete(self)
         db.session.commit()
+    
+    

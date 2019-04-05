@@ -1,5 +1,6 @@
 import sqlite3
 from db import db
+from flask_bcrypt import generate_password_hash
 
 class UserModel(db.Model):
     __tablename__ = "users"
@@ -10,9 +11,11 @@ class UserModel(db.Model):
 
     def __init__(self, username, password): 
         self.username = username
-        self.password = password
+        self.password = generate_password_hash(
+            password)
     
     def save_to_db(self):
+
         db.session.add(self)
         db.session.commit()
 

@@ -20,7 +20,7 @@ class UserRegister(Resource):
         if UserModel.find_by_username(data['username']):
             return {"message": "Username already exist"}, 400
         
-         
+        
         user = UserModel(**data)
         user.save_to_db()
 
