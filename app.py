@@ -67,7 +67,7 @@ sched.start()
 # all the resources
 api.add_resource(AllItems, '/items')        
 api.add_resource(Items, '/category/<category_id>/items')
-api.add_resource(Item, '/category/<category_id>/item','/store/<category_id>/item/<id>')
+api.add_resource(Item, '/category/<category_id>/item','/category/<category_id>/item/<id>')
 api.add_resource(Category, '/category','/category/<id>')
 api.add_resource(CategoryList, '/categories')
 api.add_resource(CategoryByTags, '/categories/<string:tag>')
