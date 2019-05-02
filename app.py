@@ -31,9 +31,9 @@ app.config['JWT_ACCESS_TOKEN_EXPIRES'] = datetime.timedelta(minutes = 60)
 
 # remove this before push this to staging
 # this is only for creating table in the testing in the local machine
-@app.before_first_request
-def create_tables():
-    db.create_all()
+# @app.before_first_request
+# def create_tables():
+#     db.create_all()
 
 # flask_jwt
 # jwt = JWT(app, authenticate, identity) #/auth
@@ -55,7 +55,7 @@ def sensor():
                 item.delete_from_db()
                 CategoryModel.query.update({CategoryModel.remaining: CategoryModel.total}) 
         # db.session.flush()
-        db.session.commit()
+        # db.session.commit()
         # print("Scheduler is alive!")
 
 sched = BackgroundScheduler(daemon=True)
