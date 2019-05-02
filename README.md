@@ -1,4 +1,4 @@
-# Shopping REST API
+# Simple finance REST API
 
 This API is build with 
 1. Flask
