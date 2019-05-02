@@ -7,5 +7,6 @@ Flask-SQLAlchemy
 flask-marshmallow
 apscheduler
 marshmallow-sqlalchemy
+marshmallow_enum
 uwsgi
 psycopg2
