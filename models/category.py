@@ -77,5 +77,5 @@ class CategorySchema(ma.Schema):
 
     links = ma.Hyperlinks({
         # 'self': ma.URLFor('item', store_id ='<id>', id='<id>'),
-        'collection': ma.URLFor('items', user_id ='<id>')
+        'collection': ma.URLFor('items', category_id ='<id>')
     })
