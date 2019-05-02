@@ -1,7 +1,11 @@
 Flask
 Flask-RESTful
-Flask-JWT
+Flask-JWT-Extended
+Flask-Bcrypt
+Flask-Cors
 Flask-SQLAlchemy
-flask-bcrypt
+flask-marshmallow
+apscheduler
+marshmallow-sqlalchemy
 uwsgi
 psycopg2
