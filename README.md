@@ -8,4 +8,4 @@ This API is build with
 
 For all the requirements please check the __requirements.txt__ file.
 
-This application is also deployed to Heroku
+This application is also deployed to Heroku with postgreSQL
