@@ -7,8 +7,9 @@ from flask_cors import CORS, cross_origin
 from flask_jwt_extended import JWTManager
 from datetime import date
 # from security import authenticate, identity
-from resources.user import UserRegister, UserLogin, TokenRefresh, User, UserList, UserToAdmin #UserIdentity
+from resources.user import UserRegister, UserLogin, TokenRefresh, User, UserList, UserToAdmin, UserLogoutAccess, UserLogoutRefresh #UserIdentity
 from resources.item import Item, Items, AllItems
+from models.user import RevokedTokenModel
 from models.item import ItemModel
 from models.category import CategoryModel
 from resources.category import Category, CategoryList, CategoryByTags
@@ -29,17 +30,27 @@ app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY', 'super-secret')
 # JWT access token will expire after 60 minutes
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = datetime.timedelta(minutes = 60)
 
+app.config['JWT_BLACKLIST_ENABLED'] = True
+app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access', 'refresh']
+
+
+
+
 # remove this before push this to staging
 # this is only for creating table in the testing in the local machine
-# @app.before_first_request
-# def create_tables():
-#     db.create_all()
+@app.before_first_request
+def create_tables():
+    db.create_all()
 
 # flask_jwt
 # jwt = JWT(app, authenticate, identity) #/auth
 jwt = JWTManager(app)
 
 
+@jwt.token_in_blacklist_loader
+def check_if_token_in_blacklist(decrypted_token):
+    jti = decrypted_token['jti']
+    return RevokedTokenModel.is_jti_blacklisted(jti)
 
 
 
@@ -75,6 +86,8 @@ api.add_resource(UserRegister, '/register')
 api.add_resource(UserLogin, '/auth')
 api.add_resource(User,'/user')
 api.add_resource(UserList,'/allusers')
+api.add_resource(UserLogoutAccess, '/logout/access')
+api.add_resource(UserLogoutRefresh, '/logout/refresh')
 # api.add_resource(UserToAdmin, '/admin/register')
 # api.add_resource(UserIdentity, '/user/identity')
 # api.add_resource(resources.UserLogoutAccess, '/logout/access')

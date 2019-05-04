@@ -1,8 +1,8 @@
 import sqlite3
 from flask_restful import Resource, reqparse
-from models.user import UserModel, UserSchema
+from models.user import UserModel, UserSchema, RevokedTokenModel
 from flask_bcrypt import check_password_hash, generate_password_hash
-from flask_jwt_extended import (create_access_token, create_refresh_token, jwt_required, jwt_refresh_token_required, get_jwt_identity)   
+from flask_jwt_extended import (create_access_token, create_refresh_token, jwt_required, jwt_refresh_token_required, get_jwt_identity, get_raw_jwt)   
 
 user_schema = UserSchema()
 users_schema = UserSchema(many=True)
@@ -227,4 +227,29 @@ class UserToAdmin(Resource):
 
         user.save_to_db()
         return user_schema.dump(user).data, 201
+
+
+
+class UserLogoutAccess(Resource):
+    @jwt_required
+    def post(self):
+        jti = get_raw_jwt()['jti']
+        try:
+            revoked_token = RevokedTokenModel(jti = jti)
+            revoked_token.add()
+            return {'message': 'Access token has been revoked'}
+        except:
+            return {'message': 'Something went wrong'}, 500
+
+
+class UserLogoutRefresh(Resource):
+    @jwt_refresh_token_required
+    def post(self):
+        jti = get_raw_jwt()['jti']
+        try:
+            revoked_token = RevokedTokenModel(jti = jti)
+            revoked_token.add()
+            return {'message': 'Refresh token has been revoked'}
+        except:
+            return {'message': 'Something went wrong'}, 500
     
