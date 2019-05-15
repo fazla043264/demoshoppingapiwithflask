@@ -55,7 +55,8 @@ class Item(Resource):
         category = CategoryModel.find_by_id(current_user.id,category_id)
         data['category_id'] = category.id
         # data['date'] = datetime.now()
-        sum = db.session.query(func.sum(ItemModel.amount)).scalar()
+        sum = db.session.query(func.sum(ItemModel.amount)).filter(ItemModel.category_id == category.id).scalar()
+        print(sum)
         if sum == None and data['amount'] <= category.total: 
             item = ItemModel(**data)
             category.remaining = category.total - data['amount']
@@ -106,7 +107,7 @@ class Item(Resource):
         item = ItemModel.find_by_id(current_user.id, category_id, id)
         data['category_id'] = category.id
         # data['date'] = datetime.now()
-        sum = db.session.query(func.sum(ItemModel.amount)).scalar()
+        sum = db.session.query(func.sum(ItemModel.amount)).filter(ItemModel.category_id == category.id).scalar()
         # update_item = {'name' : name, 'price' : data['price']}
         if item is None:
             if sum == None and data['amount'] <= category.total: 

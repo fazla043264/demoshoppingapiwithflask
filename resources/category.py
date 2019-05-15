@@ -44,23 +44,23 @@ class Category(Resource):
         data['total'] = total_per_category
         data['remaining'] = total_per_category
         # data['remaining'] = total_per_category - 
-        sum = db.session.query(func.sum(CategoryModel.percentage)).scalar()
+        sum = db.session.query(func.sum(CategoryModel.percentage)).filter(CategoryModel.user_id == current_user.id).scalar()
         # number_of_tags = db.session.query(func.count(StoreModel.id)).scalar()
 
-        # print(number_of_tags)
+        print(sum)
 
 
         if sum == None and data['percentage'] <= 100:
             category = CategoryModel(**data)
             
             
-        elif sum!= None and data['percentage'] + sum <= 100 and not db.session.query(CategoryModel.tags).filter_by(tags = data['tags']).all():
+        elif sum!= None and data['percentage'] + sum <= 100 and not db.session.query(CategoryModel.tags).filter(CategoryModel.tags == data['tags'], CategoryModel.user_id == current_user.id).all():
             category = CategoryModel(**data)
             
         else:
             if not (sum!= None and data['percentage'] + sum <= 100):
                 return {'message' : "total percentage can't be more than 100%"}, 400
-            elif db.session.query(CategoryModel.tags).filter_by(tags = data['tags']).all():
+            elif db.session.query(CategoryModel.tags).filter(CategoryModel.tags == data['tags'], CategoryModel.user_id == current_user.id).all():
                 return {'message' : "you have already used this {} tag. One tag can be used only once but can be edited".format(data['tags'])}, 403        
             else:
                 return {'message' : "You are not allowed to add more than 3 tags"}, 400
@@ -77,30 +77,39 @@ class Category(Resource):
         
         email = get_jwt_identity()
         data = Category.parser.parse_args()
-        user = UserModel.find_by_email(email)
-        category = CategoryModel.find_by_id(user.id, id)
-        data['user_id'] = user.id
+        current_user = UserModel.find_by_email(email)
+        category = CategoryModel.find_by_id(current_user.id, id)
+        data['user_id'] = current_user.id
         
-        sum = db.session.query(func.sum(CategoryModel.percentage)).scalar()
+        sum = db.session.query(func.sum(CategoryModel.percentage)).filter(CategoryModel.user_id == current_user.id).scalar()
+        print(sum)
         if category is None:
             
 
             if sum == None and data['percentage'] <= 100:
                 category = CategoryModel(**data)
                 
-            elif sum!= None and data['percentage'] + sum <= 100 and not db.session.query(CategoryModel.tags).filter_by(tags = data['tags']).all():
+            elif sum!= None and data['percentage'] + sum <= 100 and not db.session.query(CategoryModel.tags).filter(CategoryModel.tags == data['tags'], CategoryModel.user_id == current_user.id).all():
                 category = CategoryModel(**data)
                 
             else:
                 if not (sum!= None and data['percentage'] + sum <= 100):
                     return {'message' : "total percentage can't be more than 100%"}, 400
-                elif db.session.query(CategoryModel.tags).filter_by(tags = data['tags']).all():
+                elif db.session.query(CategoryModel.tags).filter(CategoryModel.tags == data['tags'], CategoryModel.user_id == current_user.id).all():
                     return {'message' : "you have already used this {} tag. One tag can be used only once but can be edited".format(data['tags'])}, 400        
                 else:
                     return {'message' : "You are not allowed to add more than 3 tags"}, 400
-        elif sum!= None and (data['percentage'] + sum) - db.session.query(CategoryModel.percentage).filter_by(tags = data['tags']).scalar() <= 100:
+        elif sum!= None and (data['percentage'] + sum) - db.session.query(CategoryModel.percentage).filter(CategoryModel.tags == data['tags'], CategoryModel.user_id == current_user.id).scalar() <= 100:
             
             category.percentage = data['percentage']
+            total_per_category = (data['percentage'] / 100) * current_user.salary
+            if (category.total >= total_per_category):
+                category.remaining = category.remaining - (category.total - total_per_category)
+                category.total = total_per_category
+            else:
+                category.remaining = category.remaining -(category.total - total_per_category)
+                category.total = total_per_category
+
         else:
             return {'message' : "total percentage can't be more than 100%"}, 400
 
