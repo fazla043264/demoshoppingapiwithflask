@@ -38,9 +38,9 @@ app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access', 'refresh']
 
 # remove this before push this to staging
 # this is only for creating table in the testing in the local machine
-@app.before_first_request
-def create_tables():
-    db.create_all()
+# @app.before_first_request
+# def create_tables():
+#     db.create_all()
 
 # flask_jwt
 # jwt = JWT(app, authenticate, identity) #/auth
@@ -88,7 +88,7 @@ api.add_resource(User,'/user')
 api.add_resource(UserList,'/allusers')
 api.add_resource(UserLogoutAccess, '/logout/access')
 api.add_resource(UserLogoutRefresh, '/logout/refresh')
-# api.add_resource(UserToAdmin, '/admin/register')
+api.add_resource(UserToAdmin, '/admin/register')
 # api.add_resource(UserIdentity, '/user/identity')
 
 api.add_resource(TokenRefresh, '/token/refresh')
