@@ -28,7 +28,7 @@ CORS(app)
 # flask_jwt_extended JWT_SECRET_KEY 
 app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY', 'super-secret')
 # JWT access token will expire after 60 minutes
-app.config['JWT_ACCESS_TOKEN_EXPIRES'] = datetime.timedelta(minutes = 60)
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = datetime.timedelta(minutes = 30)
 
 app.config['JWT_BLACKLIST_ENABLED'] = True
 app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access', 'refresh']
@@ -65,9 +65,10 @@ def sensor():
                 print("{} item deleted".format(item.name))
                 item.delete_from_db()
                 CategoryModel.query.update({CategoryModel.remaining: CategoryModel.total}) 
-        # db.session.flush()
-        # db.session.commit()
-        # print("Scheduler is alive!")
+        
+        db.session.flush()
+        db.session.commit()
+        print("Scheduler is alive!")
 
 sched = BackgroundScheduler(daemon=True)
 sched.add_job(sensor,'interval',hours=12)

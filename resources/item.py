@@ -83,15 +83,15 @@ class Item(Resource):
     def delete(self, category_id, id):
         email = get_jwt_identity()
         current_user = UserModel.find_by_email(email)
-        category = CategoryModel.find_by_id(current_user.id, id)
+        category = CategoryModel.find_by_id(current_user.id, category_id)
         item = ItemModel.find_by_id(current_user.id, category_id, id)
-        print(email)
+        # print(email)
         # item = ItemModel.find_by_id(current_user.id, category_id, id)
-
+        print(category)
         if item:
             category.remaining += item.amount
             item.delete_from_db()
-            return {'message' : "Item deleted"}
+            return {'message' : "Item {} deleted".format(item.name)}, 200 
         elif not category:
             return { 'message' : "Category not found" }
         else:
